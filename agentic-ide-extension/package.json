@@ -1,0 +1,39 @@
+{
+  "name": "ide-switcher",
+  "displayName": "IDEswitcher - Jump to IntelliJ",
+  "description": "Jump from this editor to IntelliJ IDEA with current file and cursor position",
+  "version": "1.2.0",
+  "publisher": "ali-team",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onCommand:ideSwitcher.jumpToIntelliJ"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [{
+      "command": "ideSwitcher.jumpToIntelliJ",
+      "title": "Jump to IntelliJ IDEA"
+    }],
+    "keybindings": [{
+      "command": "ideSwitcher.jumpToIntelliJ",
+      "key": "shift+alt+o",
+      "mac": "shift+alt+o"
+    }],
+    "menus": {
+      "editor/context": [{
+        "command": "ideSwitcher.jumpToIntelliJ",
+        "group": "navigation"
+      }]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}

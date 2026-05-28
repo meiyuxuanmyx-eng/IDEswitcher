@@ -1,0 +1,6 @@
+package com.ali.ideswitcher.target
+
+enum class Target(val displayName: String) {
+    QODER("Qoder"),
+    CODEFUSE("CodeFuse")
+}

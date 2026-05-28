@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+local.properties
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Node.js
+node_modules/
+
+# VS Code extension compiled output
+agentic-ide-extension/out/
+
+# macOS
+.DS_Store
+
+# AI tooling
+CLAUDE.md
+.claude/
+.codefuse/

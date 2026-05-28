@@ -1,0 +1,53 @@
+<idea-plugin>
+    <id>com.ali.ideswitcher</id>
+    <name>IDEswitcher</name>
+    <version>1.2.0</version>
+    <vendor email="team@example.com" url="https://example.com">Ali Team</vendor>
+
+    <description><![CDATA[
+        <p>IDEswitcher - Jump from IntelliJ IDEA to Qoder or CodeFuse while preserving cursor position and file context.</p>
+        <p>专为团队内部使用设计，通过快捷键 Option+Shift+O 跳转到 Settings 中选择的目标编辑器（Qoder 或 CodeFuse）。</p>
+        <p>仅支持 macOS。</p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <p>1.2.0</p>
+        <ul>
+            <li>新增 CodeFuse 作为可选跳转目标</li>
+            <li>新增 Settings → Tools → IDEswitcher 页面，可切换默认跳转目标（Qoder / CodeFuse）</li>
+            <li>移除从未生效的 URL scheme fallback（仅保留 CLI 路径）</li>
+        </ul>
+        <p>1.0.0 - Initial release</p>
+        <ul>
+            <li>Quick jump from IntelliJ to Qoder with Option+Shift+O (Mac)</li>
+            <li>Preserves file path and cursor position (line, column)</li>
+            <li>Supports opening both project and specific files</li>
+        </ul>
+    ]]></change-notes>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService
+            serviceImplementation="com.ali.ideswitcher.settings.IdeSwitcherSettings"/>
+        <applicationConfigurable
+            parentId="tools"
+            id="com.ali.ideswitcher.settings.IdeSwitcherConfigurable"
+            instance="com.ali.ideswitcher.settings.IdeSwitcherConfigurable"
+            displayName="IDEswitcher"/>
+    </extensions>
+
+    <actions>
+        <action
+            id="com.ali.ideswitcher.action.JumpAction"
+            class="com.ali.ideswitcher.action.JumpAction"
+            text="Jump to Editor"
+            description="Open current project/file in the configured target editor (Qoder or CodeFuse)">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt O"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="shift alt O"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+
+</idea-plugin>

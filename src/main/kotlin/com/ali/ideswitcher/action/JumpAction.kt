@@ -1,0 +1,75 @@
+package com.ali.ideswitcher.action
+
+import com.ali.ideswitcher.settings.IdeSwitcherSettings
+import com.ali.ideswitcher.target.CodeFuseJumper
+import com.ali.ideswitcher.target.Jumper
+import com.ali.ideswitcher.target.QoderJumper
+import com.ali.ideswitcher.target.Target
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.util.SystemInfo
+
+class JumpAction : AnAction() {
+
+    private val logger = Logger.getInstance(JumpAction::class.java)
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
+    override fun update(e: AnActionEvent) {
+        e.presentation.isEnabledAndVisible = e.project != null && SystemInfo.isMac
+    }
+
+    override fun actionPerformed(e: AnActionEvent) {
+        val project = e.project ?: return
+
+        if (!SystemInfo.isMac) {
+            Messages.showErrorDialog(
+                project,
+                "IDEswitcher only supports macOS.\nCurrent OS: ${SystemInfo.OS_NAME}",
+                "Unsupported Platform"
+            )
+            return
+        }
+
+        val target = IdeSwitcherSettings.getInstance().state.target
+        val jumper: Jumper = when (target) {
+            Target.QODER -> QoderJumper
+            Target.CODEFUSE -> CodeFuseJumper
+        }
+
+        if (!jumper.isInstalled()) {
+            Messages.showErrorDialog(
+                project,
+                "${jumper.displayName} not found at ${jumper.appPath}.\n" +
+                    "Install it, or change the target in Settings → Tools → IDEswitcher.",
+                "${jumper.displayName} Not Found"
+            )
+            return
+        }
+
+        val file = e.getData(CommonDataKeys.VIRTUAL_FILE)
+        val editor = e.getData(CommonDataKeys.EDITOR)
+        val line = editor?.caretModel?.currentCaret?.logicalPosition?.line?.plus(1)
+        val column = editor?.caretModel?.currentCaret?.logicalPosition?.column?.plus(1)
+        val projectPath = project.basePath ?: run {
+            Messages.showErrorDialog(project, "Cannot determine project path.", "Jump Failed")
+            return
+        }
+        val filePath = if (file?.isDirectory == false) file.path else null
+
+        try {
+            jumper.jump(projectPath, filePath, line, column)
+        } catch (ex: Exception) {
+            logger.error("Failed to jump to ${jumper.displayName}", ex)
+            Messages.showErrorDialog(
+                project,
+                "Failed to open ${jumper.displayName}: ${ex.message}",
+                "Jump Failed"
+            )
+        }
+    }
+}
